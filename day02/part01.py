@@ -25,7 +25,8 @@ def execute(intcode: List[int]) -> List[int]:
     """
     if not intcode:
         return []
-
+    
+    intcode = intcode.copy()
     i = 0
     while True:
         opcode = intcode[i]
