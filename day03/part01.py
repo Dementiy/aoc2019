@@ -1,6 +1,7 @@
 import sys
 
-from typing import List, NamedTuple, Set, Tuple
+from functools import partial
+from typing import List, NamedTuple, Tuple
 
 
 class Point(NamedTuple):
@@ -30,15 +31,15 @@ def manhattan(p: Point, q: Point) -> int:
     return sum(abs(pi - qi) for pi, qi in zip(p, q))
 
 
-def trace_wire(wire: List[str]) -> Set[Point]:
-    trace = set()
+def trace_wire(wire: List[str]) -> List[Point]:
+    trace = []
     p = Point(0, 0)
     steps = ((v[0], int(v[1:])) for v in wire)
     for d, step_size in steps:
         for _ in range(step_size):
             move_to = DIRECTIONS[d]
             p = Point(p.x + move_to.x, p.y + move_to.y)
-            trace.add(p)
+            trace.append(p)
     return trace
 
 
@@ -55,10 +56,8 @@ def closest_distance(w1: List[str], w2: List[str]) -> int:
     ... )
     135
     """
-    central = Point(0, 0)
-    return sum(
-        min(trace_wire(w1) & trace_wire(w2), key=lambda p: manhattan(p, central))  # type: ignore
-    )
+    distance = partial(manhattan, Point(0, 0))
+    return sum(min(set(trace_wire(w1)) & set(trace_wire(w2)), key=distance))
 
 
 if __name__ == "__main__":
